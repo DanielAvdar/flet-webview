@@ -22,7 +22,6 @@ class WebViewControl extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     debugPrint("WebViewControl build: ${control.id}");
-    String url = control.attrString("url", "https://flet.dev")!;
     Widget view =
         const ErrorControl("Webview is not yet supported on this platform.");
     if (isMobilePlatform() || isMacOSDesktop()) {
@@ -33,7 +32,10 @@ class WebViewControl extends StatelessWidget {
     } else if (isWebPlatform()) {
       view = WebviewWeb(control: control, backend: backend);
     } else if (isWindowsDesktop() || isLinuxDesktop()) {
-      view = WebviewDesktop(url: url);
+      var bgcolor =
+          parseColor(Theme.of(context), control.attrString("bgcolor"));
+      view = WebviewDesktop(
+          control: control, backend: backend, bgcolor: bgcolor);
     }
 
     return constrainedControl(context, view, parent, control);

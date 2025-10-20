@@ -68,7 +68,7 @@ class WebView(ConstrainedControl):
     """
     Easily load webpages while allowing user interaction.
 
-    The `WebView` control is designed exclusively for iOS and Android platforms.
+    The `WebView` control is designed for iOS, Android, macOS, and Windows platforms.
 
     ## Examples
     A simple webview implementation using this class could be like:
@@ -244,9 +244,10 @@ class WebView(ConstrainedControl):
             PagePlatform.ANDROID,
             PagePlatform.IOS,
             PagePlatform.MACOS,
+            PagePlatform.WINDOWS,
         ]:
             raise FletUnsupportedPlatformException(
-                "This method is supported on Android, iOS and macOS platforms only."
+                "This method is supported on Android, iOS, macOS and Windows platforms only."
             )
 
     def reload(self):
