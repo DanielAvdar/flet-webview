@@ -25,6 +25,9 @@ class _WebviewDesktopState extends State<WebviewDesktop> {
       webview_win.WebviewController();
   bool _isInitialized = false;
   String? _errorMessage;
+  bool _canGoBack = false;
+  bool _canGoForward = false;
+  String _currentTitle = "";
 
   @override
   void initState() {
@@ -59,6 +62,15 @@ class _WebviewDesktopState extends State<WebviewDesktop> {
         widget.backend.triggerControlEvent(widget.control.id, "url_change", url);
       });
 
+      _controller.historyChanged.listen((history) {
+        _canGoBack = history.canGoBack;
+        _canGoForward = history.canGoForward;
+      });
+
+      _controller.title.listen((title) {
+        _currentTitle = title;
+      });
+
       // Set background color if provided
       if (widget.bgcolor != null) {
         await _controller.setBackgroundColor(widget.bgcolor!);
@@ -76,16 +88,16 @@ class _WebviewDesktopState extends State<WebviewDesktop> {
             await _controller.reload();
             break;
           case "can_go_back":
-            return _controller.canGoBack().toString();
+            return _canGoBack.toString();
           case "can_go_forward":
-            return _controller.canGoForward().toString();
+            return _canGoForward.toString();
           case "go_back":
-            if (await _controller.canGoBack()) {
+            if (_canGoBack) {
               await _controller.goBack();
             }
             break;
           case "go_forward":
-            if (await _controller.canGoForward()) {
+            if (_canGoForward) {
               await _controller.goForward();
             }
             break;
@@ -98,7 +110,17 @@ class _WebviewDesktopState extends State<WebviewDesktop> {
           case "get_current_url":
             return _controller.url.value;
           case "get_title":
-            return await _controller.getTitle();
+            return _currentTitle;
+          case "get_user_agent":
+            // webview_windows does not support getting user agent
+            return null;
+          case "enable_zoom":
+          case "disable_zoom":
+          case "load_file":
+          case "scroll_to":
+          case "scroll_by":
+            // These methods are not supported on Windows platform
+            break;
           case "load_request":
             var url = args["url"];
             if (url != null) {
